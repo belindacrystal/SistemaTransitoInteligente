@@ -1,4 +1,4 @@
-package application;
+package business ;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
