@@ -5,5 +5,5 @@ module SistemaTransitoInteligente_BeliNai {
 	requires javafx.fxml;
 	requires javafx.graphics;
 	
-	opens application to javafx.graphics, javafx.fxml;
+	opens business to javafx.graphics, javafx.fxml;
 }
