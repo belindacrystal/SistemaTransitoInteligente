@@ -1,28 +1,23 @@
 package domain;
 
+
 public class Grafo {
-    private NodoInterseccion[] nodos;
-    private Calle[][] matrizCalles;
 
-    public Grafo(int tamanio) {
-        nodos = new NodoInterseccion[tamanio * tamanio];
-        matrizCalles = new Calle[tamanio * tamanio][tamanio * tamanio];
+    private ListaSimple<NodoInterseccion> listaNodos;
+
+    public Grafo() {
+        this.listaNodos = new ListaSimple<>();
     }
 
-    public void agregarNodo(int posicion, NodoInterseccion nodo) {
-        nodos[posicion] = nodo;
+    public ListaSimple<NodoInterseccion> getListaNodos() {
+        return listaNodos;
     }
 
-    public void agregarCalle(int origen, int destino, Calle calle) {
-        matrizCalles[origen][destino] = calle;
+    public void setListaNodos(ListaSimple<NodoInterseccion> listaNodos) {
+        this.listaNodos = listaNodos;
     }
 
-    public NodoInterseccion getNodo(int posicion) {
-        return nodos[posicion];
-    }
-
-    public Calle getCalle(int origen, int destino) {
-        return matrizCalles[origen][destino];
+    public void limpiar() {
+        this.listaNodos = new ListaSimple<>();
     }
 }
-
