@@ -1,8 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
+<AnchorPane prefHeight="800.0" prefWidth="922.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.UIMainController">
+
+    <children>
+        <StackPane layoutX="10.0" layoutY="10.0" prefHeight="600" prefWidth="600">
+    <children>
+        <GridPane fx:id="gridPane" />
+    </children>
+</StackPane>
+
+                  <ComboBox fx:id="cbSize" layoutX="270.0" layoutY="635.0" prefWidth="150.0" />
+      <Label layoutX="40.0" layoutY="639.0" text="Seleccione el tamaño de la simulación:" />
+      <Label layoutX="646.0" layoutY="82.0" text="Incidentes y posición (cola)" />
+      <TableView fx:id="tvIncidentesPosicion" layoutX="646.0" layoutY="107.0" prefHeight="112.0" prefWidth="270.0">
+        <columns>
+          <TableColumn prefWidth="75.0" />
+        </columns>
+      </TableView>
+      <Label layoutX="647.0" layoutY="236.0" text="Vías más congestionadas (de mayor a menor)" />
+      <TableView fx:id="tvCongetionVehicular" layoutX="647.0" layoutY="266.0" prefHeight="112.0" prefWidth="270.0">
+         <columns>
+            <TableColumn prefWidth="75.0" />
+         </columns>
+      </TableView>
+      <Button fx:id="btnGenerarEvento" layoutX="646.0" layoutY="400.0" mnemonicParsing="false" onAction="#generarEvento" text="Generar evento" />
+      <Button fx:id="btnSolicitarTaxi" layoutX="795.0" layoutY="399.0" mnemonicParsing="false" onAction="#solicitarTaxi" prefHeight="26.0" prefWidth="98.0" text="Solicitar taxi" />
+      <Button fx:id="btnAumentar" layoutX="653.0" layoutY="634.0" mnemonicParsing="false" onAction="#aumentarVehiculo" prefHeight="26.0" prefWidth="98.0" text="Aumetar" />
+      <Button fx:id="btnDisminuir" layoutX="799.0" layoutY="634.0" mnemonicParsing="false" onAction="#disminuirVehiculo" prefHeight="26.0" prefWidth="98.0" text="Disminuir" />
+      <VBox layoutX="702.0" layoutY="478.0" prefHeight="98.0" prefWidth="129.0" spacing="10.0">
+         <children>
+            <Button fx:id="btnIniciar" mnemonicParsing="false" onAction="#iniciarSimulation" prefHeight="26.0" prefWidth="126.0" text="Iniciar simulación" />
+            <Button fx:id="btnReanudar" mnemonicParsing="false" onAction="#reanudarSimulation" text="Reanudar simulación" />
+            <Button fx:id="btnPausar" mnemonicParsing="false" onAction="#pasuarSimulation" prefHeight="26.0" prefWidth="126.0" text="Pausar simulación" />
+         </children>
+      </VBox>
+      <Label layoutX="733.0" layoutY="446.0" text="Simuladores:" />
+      <Label layoutX="678.0" layoutY="605.0" text="Aumento o disminución vehicular" />
+    </children>
 </AnchorPane>
-
