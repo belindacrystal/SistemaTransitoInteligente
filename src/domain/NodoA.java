@@ -1,18 +1,20 @@
 package domain;
+
 public class NodoA {
-    int adyacente;
-    NodoA siguiente;
-    public NodoA(int adyacente) {
-        this.adyacente = adyacente;
+    private Calle calle;
+    private NodoA siguiente;
+
+    public NodoA(Calle calle) {
+        this.calle = calle;
         this.siguiente = null;
     }
 
-    public int getAdyacente() {
-        return adyacente;
+    public Calle getCalle() {
+        return calle;
     }
 
-    public void setAdyacente(int adyacente) {
-        this.adyacente = adyacente;
+    public void setCalle(Calle calle) {
+        this.calle = calle;
     }
 
     public NodoA getSiguiente() {

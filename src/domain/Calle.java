@@ -9,6 +9,7 @@ public class Calle {
     private boolean congestionada;
     private boolean enReparacion;
     private ListaSimple<Vehiculo> vehiculosEnCalle;
+    private String nombre; 
 
     public Calle(NodoInterseccion nodoOrigen, NodoInterseccion nodoDestino, int peso) {
         this.nodoOrigen = nodoOrigen;
@@ -18,8 +19,12 @@ public class Calle {
         this.congestionada = false;
         this.enReparacion = false;
         this.vehiculosEnCalle = new ListaSimple<>();
+        this.nombre = "Calle_" + nodoOrigen.getNombre() + "_" + nodoDestino.getNombre();
     }
 
+    public String getNombre() {
+        return nombre;
+    }
     public NodoInterseccion getNodoOrigen() {
         return nodoOrigen;
     }

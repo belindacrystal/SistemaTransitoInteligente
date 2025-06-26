@@ -89,6 +89,8 @@ public class UIMainController {
 	    gridPane.setHgap(0);
 	    gridPane.setVgap(0);
 	    gridPane.setPadding(new Insets(0));
+	 // Actualizar grafo lógico en memoria
+	    AdministradorInstancias.getLogicaGrafo().generarCiudad(size);
 	    }
 
 
