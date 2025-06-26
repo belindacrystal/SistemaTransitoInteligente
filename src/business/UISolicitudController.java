@@ -8,7 +8,7 @@ import javafx.scene.control.Button;
 
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
+import business.AdministradorInstancias.AppContext;
 import javafx.event.ActionEvent;
 
 public class UISolicitudController {
@@ -37,9 +37,14 @@ public class UISolicitudController {
 				getClass().getResource("/presentation/UIMain.fxml"));
 		    Parent root = loader.load();
 		    Scene scene = new Scene(root);
+		    scene.getStylesheets().add(getClass().getResource("/business/application.css").toExternalForm());
+
+
 		    Stage stage = new Stage();
 		    stage.setScene(scene);
 		   UIMainController controller = loader.getController(); 
+		
+
 		 
 		    
 		    stage.show();

@@ -6,6 +6,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import business.AdministradorInstancias.AppContext;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
 import javafx.scene.control.ComboBox;
@@ -46,6 +48,7 @@ public class UIMainController {
 
 	    @FXML
 	    private void initialize() {
+	    	
 	      sizeSimulation();
 	    }
 	    public void generarCiudad(int size) {
@@ -89,25 +92,33 @@ public class UIMainController {
 	    gridPane.setHgap(0);
 	    gridPane.setVgap(0);
 	    gridPane.setPadding(new Insets(0));
-	 // Actualizar grafo lógico en memoria
-	    AdministradorInstancias.getLogicaGrafo().generarCiudad(size);
+	    System.out.println("Ciudad generada con " + gridPane.getChildren().size() + " nodos visibles.");
+	    
+
 	    }
 
 
 
 	    private void sizeSimulation() {
 	    	// Agregar opciones del combo: 3 a 7 cuadrantes
-	        cbSize.getItems().addAll(3, 4, 5, 6, 7);
+	    	
 	        
-	        // Establecer valor inicial
-	        cbSize.setValue(5); // por ejemplo, 5 cuadrantes por defecto
+	
+	     
+	        cbSize.getItems().addAll(3, 4, 5, 6, 7);
+	      
+
+	        cbSize.setValue(AppContext.cuadrantesSeleccionados);
+	    
 
 	     // Dibujar ciudad inicialmente con ese valor
-	        generarCiudad(cbSize.getValue() * 6 + 1); // convertir a tamaño de cuadrícula
+	        generarCiudad(cbSize.getValue() * 6 + 1); // dibuja ciudad con ese tamaño
 	        
 	        cbSize.setOnAction(e -> {
-	            int cuadrantes = cbSize.getValue();
-	            generarCiudad(cuadrantes * 6 + 1);
+	         
+	        	 int cuadrantes = cbSize.getValue();
+	             AppContext.cuadrantesSeleccionados = cuadrantes;
+	             generarCiudad(cuadrantes * 6 + 1);
 	        });
 	    }
 
