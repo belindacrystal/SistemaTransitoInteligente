@@ -20,4 +20,5 @@ public class Grafo {
     public void limpiar() {
         this.listaNodos = new ListaSimple<>();
     }
+
 }

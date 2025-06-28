@@ -12,7 +12,7 @@ public class LogicaGrafo {
     private Grafo grafo;
 
     public LogicaGrafo() {
-        this.grafo = AdministradorInstancias.getGrafo(); // Usa singleton
+        this.grafo = AdministradorInstancias.getGrafo(); 
     }
 
     

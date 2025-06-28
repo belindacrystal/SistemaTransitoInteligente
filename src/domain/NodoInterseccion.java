@@ -7,7 +7,7 @@ public class NodoInterseccion {
     private Semaforo semaforo;
     private ListaSimple<Vehiculo> colaVehiculos;
 
-    private ListaA listaA; // ← Nueva lista de adyacencia (calles que salen de aquí)
+    private ListaA listaA;
 
     public NodoInterseccion(int nombre, int fila, int columna) {
         this.nombre = nombre;
