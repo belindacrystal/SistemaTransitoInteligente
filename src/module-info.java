@@ -4,6 +4,9 @@ module SistemaTransitoInteligente_BeliNai {
 	requires com.fasterxml.jackson.datatype.jsr310;
 	requires javafx.fxml;
 	requires javafx.graphics;
+	exports domain; 
+
+
 	
 	opens business to javafx.graphics, javafx.fxml;
 }

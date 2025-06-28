@@ -29,4 +29,7 @@ public class AdministradorInstancias {
         grafo = new Grafo();
         logicaGrafo = new LogicaGrafo();
     }
+    public class AppContext {
+        public static int cuadrantesSeleccionados = 5; // valor por defecto
+    }
 }

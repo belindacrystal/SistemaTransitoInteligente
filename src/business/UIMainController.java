@@ -6,11 +6,18 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import business.AdministradorInstancias.AppContext;
+import domain.AuxIndicente;
+import domain.AuxViaCongestionada;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -23,9 +30,9 @@ public class UIMainController {
 	@FXML
 	private ComboBox<Integer> cbSize;
 	@FXML
-	private TableView tvIncidentesPosicion;
+	private TableView<AuxIndicente> tvIncidentesPosicion;
 	@FXML
-	private TableView tvCongetionVehicular;
+	private TableView<AuxViaCongestionada> tvCongetionVehicular;
 	@FXML
 	private Button btnGenerarEvento;
 	@FXML
@@ -40,15 +47,53 @@ public class UIMainController {
 	private Button btnReanudar;
 	@FXML
 	private Button btnPausar;
+	@FXML 
+	private  TableColumn<AuxIndicente,String> tcPosicion;
+	@FXML 
+	private  TableColumn<AuxIndicente,String> tcIncidente;
+	@FXML
+	private TableColumn<AuxViaCongestionada,Integer> tcCantidadVehiculos;
+	@FXML
+	private TableColumn<AuxViaCongestionada,String> tcCalle;
 	
 	  private static final int GRID_SIZE = 25;
 	  private static final int CELL_SIZE = 25; // puedes ajustar el tamaño visual
 
 	    @FXML
 	    private void initialize() {
+	    	loadTableViewIncidentes();
+	    	loadTableViewViasCongestionadas();
+	    	
 	      sizeSimulation();
 	    }
-	    public void generarCiudad(int size) {
+	    private void loadTableViewViasCongestionadas() {
+	    	tcCalle = new TableColumn<AuxViaCongestionada, String>("Calle");
+	    	tcCalle.setCellValueFactory(new PropertyValueFactory<>("calle"));
+	    	tcCalle.setReorderable(false);
+	    	tcCalle.setResizable(false);
+			
+	    	tcCantidadVehiculos = new TableColumn<AuxViaCongestionada, Integer>("Cantidad de Vehículos");
+	    	tcCantidadVehiculos.setCellValueFactory(new PropertyValueFactory<>("cantidadVehiculos"));
+	    	tcCantidadVehiculos.setReorderable(false);
+	    	//tcCantidadVehiculos.setResizable(false);
+
+			tvCongetionVehicular.getColumns().addAll(tcCalle, tcCantidadVehiculos);
+		}
+		private void loadTableViewIncidentes() {
+			tcPosicion = new TableColumn<AuxIndicente, String>("Posición");
+			tcPosicion.setCellValueFactory(new PropertyValueFactory<>("posicion"));
+			tcPosicion.setReorderable(false);
+			tcPosicion.setResizable(false);
+			
+			tcIncidente = new TableColumn<AuxIndicente, String>("Indicentes");
+			tcIncidente.setCellValueFactory(new PropertyValueFactory<>("incidente"));
+			tcIncidente.setReorderable(false);
+			tcIncidente.setResizable(false);
+			
+			tvIncidentesPosicion.getColumns().addAll(tcPosicion, tcIncidente);
+			
+		}
+		public void generarCiudad(int size) {
 	        gridPane.getChildren().clear();
 	        gridPane.getColumnConstraints().clear();
 	        gridPane.getRowConstraints().clear();
@@ -89,8 +134,9 @@ public class UIMainController {
 	    gridPane.setHgap(0);
 	    gridPane.setVgap(0);
 	    gridPane.setPadding(new Insets(0));
-	 // Actualizar grafo lógico en memoria
-	    AdministradorInstancias.getLogicaGrafo().generarCiudad(size);
+	    System.out.println("Ciudad generada con " + gridPane.getChildren().size() + " nodos visibles.");
+	    
+
 	    }
 
 
@@ -98,16 +144,19 @@ public class UIMainController {
 	    private void sizeSimulation() {
 	    	// Agregar opciones del combo: 3 a 7 cuadrantes
 	        cbSize.getItems().addAll(3, 4, 5, 6, 7);
-	        
-	        // Establecer valor inicial
-	        cbSize.setValue(5); // por ejemplo, 5 cuadrantes por defecto
+	      
+
+	        cbSize.setValue(AppContext.cuadrantesSeleccionados);
+	    
 
 	     // Dibujar ciudad inicialmente con ese valor
-	        generarCiudad(cbSize.getValue() * 6 + 1); // convertir a tamaño de cuadrícula
+	        generarCiudad(cbSize.getValue() * 6 + 1); // dibuja ciudad con ese tamaño
 	        
 	        cbSize.setOnAction(e -> {
-	            int cuadrantes = cbSize.getValue();
-	            generarCiudad(cuadrantes * 6 + 1);
+	         
+	        	 int cuadrantes = cbSize.getValue();
+	             AppContext.cuadrantesSeleccionados = cuadrantes;
+	             generarCiudad(cuadrantes * 6 + 1);
 	        });
 	    }
 
@@ -147,7 +196,7 @@ public class UIMainController {
 					}
 					);
 			Stage temp = (Stage)this.btnSolicitarTaxi.getScene().getWindow();	
-			temp.close();
+			//temp.close();
 					
 		}catch(Exception e) {
 			
