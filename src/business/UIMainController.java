@@ -196,7 +196,7 @@ public class UIMainController {
 					}
 					);
 			Stage temp = (Stage)this.btnSolicitarTaxi.getScene().getWindow();	
-			temp.close();
+			//temp.close();
 					
 		}catch(Exception e) {
 			

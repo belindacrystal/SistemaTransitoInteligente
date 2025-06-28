@@ -48,8 +48,52 @@ public class LogicaGrafo {
         // Guardar en el grafo
         grafo.setListaNodos(lista);
 
-        // Conectar nodos
-        conectarNodos(lista);
+     // Conectar nodos con sentido del tránsito
+        NodoSimple<NodoInterseccion> origen = lista.getPrimero();
+        while (origen != null) {
+            NodoInterseccion nodoOrigen = origen.getDato();
+            int fila = nodoOrigen.getFila();
+            int col = nodoOrigen.getColumna();
+            int idOrigen = nodoOrigen.getNombre();
+
+            NodoSimple<NodoInterseccion> destino = lista.getPrimero();
+            while (destino != null) {
+                NodoInterseccion nodoDestino = destino.getDato();
+                int filaDest = nodoDestino.getFila();
+                int colDest = nodoDestino.getColumna();
+                int idDestino = nodoDestino.getNombre();
+
+                // Horizontal: Avenidas
+                if (fila == filaDest) {
+                    if (fila % 2 == 0 && colDest == col - 6) {
+                        // Fila par → de Este a Oeste (→ conectar a la izquierda)
+                    	insertarArista(nodoOrigen, nodoDestino);
+
+                    } else if (fila % 2 != 0 && colDest == col + 6) {
+                        // Fila impar → de Oeste a Este (← conectar a la derecha)
+                    	insertarArista(nodoOrigen, nodoDestino);
+
+                    }
+                }
+
+                // Vertical: Calles
+                if (col == colDest) {
+                    if (col % 2 == 0 && filaDest == fila + 6) {
+                        // Col par → de Norte a Sur (↑ conectar hacia abajo)
+                    	insertarArista(nodoOrigen, nodoDestino);
+
+                    } else if (col % 2 != 0 && filaDest == fila - 6) {
+                        // Col impar → de Sur a Norte (↓ conectar hacia arriba)
+                    	insertarArista(nodoOrigen, nodoDestino);
+
+                    }
+                }
+
+                destino = destino.getSiguiente();
+            }
+
+            origen = origen.getSiguiente();
+        }
         
         System.out.println("Ciudad generada con los siguientes nodos:");
 
@@ -69,6 +113,16 @@ public class LogicaGrafo {
         }
 
     }
+    private void insertarArista(NodoInterseccion origen, NodoInterseccion destino) {
+        int peso = pesoAleatorio();
+        Calle calle = new Calle(origen, destino, peso);
+        insertarCalleEnListaA(origen, calle);
+    }
+
+    private int pesoAleatorio() {
+        return (int)(Math.random() * 8) + 3; // entre 3 y 10
+    }
+
 
     private void insertarNodo(ListaSimple<NodoInterseccion> lista, NodoInterseccion nodo) {
         NodoSimple<NodoInterseccion> nuevo = new NodoSimple<>(nodo);
@@ -88,7 +142,8 @@ public class LogicaGrafo {
 
             while (siguiente != null) {
                 if (sonAdyacentes(actual.getDato(), siguiente.getDato())) {
-                    Calle calle = new Calle(actual.getDato(), siguiente.getDato(), 3);
+                	int peso = (int) (Math.random() * 8) + 3; // número entre 3 y 10
+                	Calle calle = new Calle(actual.getDato(), siguiente.getDato(), peso);
                     insertarCalleEnListaA(actual.getDato(), calle);
                 }
                 siguiente = siguiente.getSiguiente();
@@ -103,13 +158,35 @@ public class LogicaGrafo {
         return esVecinoVertical(a, b) || esVecinoHorizontal(a, b);
     }
 
-    private boolean esVecinoVertical(NodoInterseccion a, NodoInterseccion b) {
-        return a.getColumna() == b.getColumna() &&
-               (a.getFila() == b.getFila() + 6 || a.getFila() == b.getFila() - 6);
+    private boolean esVecinoVertical(NodoInterseccion origen, NodoInterseccion destino) {
+    	 // Misma columna
+        if (origen.getColumna() != destino.getColumna()) return false;
+
+        int diff = destino.getFila() - origen.getFila();
+
+        // Columna impar: permite de SUR a NORTE (hacia arriba)
+        if (origen.getColumna() % 2 != 0) {
+            return diff == -6;
+        }
+        // Columna par: permite de NORTE a SUR (hacia abajo)
+        else {
+            return diff == 6;
+        }
     }
 
-    private boolean esVecinoHorizontal(NodoInterseccion a, NodoInterseccion b) {
-        return a.getFila() == b.getFila() &&
-               (a.getColumna() == b.getColumna() + 6 || a.getColumna() == b.getColumna() - 6);
+    private boolean esVecinoHorizontal(NodoInterseccion origen, NodoInterseccion destino) {
+    	  // Misma fila
+        if (origen.getFila() != destino.getFila()) return false;
+
+        int diff = destino.getColumna() - origen.getColumna();
+
+        // Fila impar: permite de OESTE a ESTE (derecha)
+        if (origen.getFila() % 2 != 0) {
+            return diff == 6;
+        }
+        // Fila par: permite de ESTE a OESTE (izquierda)
+        else {
+            return diff == -6;
+        }
     }
 }
