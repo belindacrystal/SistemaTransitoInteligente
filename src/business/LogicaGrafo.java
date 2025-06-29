@@ -13,7 +13,7 @@ public class LogicaGrafo {
     private int[][] matrizIDs;
 
     public LogicaGrafo() {
-        this.grafo = AdministradorInstancias.getGrafo(); 
+        this.grafo = AdministradorInstancias.getGrafo();
     }
 
     private void insertarCalleEnListaA(NodoInterseccion nodo, Calle calle) {
@@ -33,9 +33,9 @@ public class LogicaGrafo {
 
         ListaSimple<NodoInterseccion> lista = new ListaSimple<>();
         matrizIDs = new int[size][size];
-
         int idVisual = 1;
 
+        // Crear nodos en posiciones válidas (multiplo de 6 en fila o columna)
         for (int fila = 0; fila < size; fila++) {
             for (int col = 0; col < size; col++) {
                 if (fila % 6 == 0 || col % 6 == 0) {
@@ -44,7 +44,7 @@ public class LogicaGrafo {
                     insertarNodo(lista, nodo);
                     idVisual++;
                 } else {
-                    matrizIDs[fila][col] = -1; // no hay nodo en esta posición
+                    matrizIDs[fila][col] = -1;
                 }
             }
         }
@@ -57,36 +57,48 @@ public class LogicaGrafo {
             int fila = origen.getFila();
             int col = origen.getColumna();
 
-            NodoSimple<NodoInterseccion> candidato = lista.getPrimero();
-            while (candidato != null) {
-                NodoInterseccion destino = candidato.getDato();
-                if (origen.getNombre() != destino.getNombre()) {
-
-                	// Avenidas: misma fila
-                	if (fila == destino.getFila()) {
-                	    if (fila % 2 != 0 && destino.getColumna() == col + 6) { // impar: Oeste → Este
-                	        insertarArista(origen, destino);
-                	    } else if (fila % 2 == 0 && destino.getColumna() == col - 6) { // par: Este → Oeste
-                	        insertarArista(origen, destino);
-                	    }
-                	}
-
-                	// Calles: misma columna
-                	if (col == destino.getColumna()) {
-                	    if (col % 2 == 0 && destino.getFila() == fila + 6) { // par: Norte → Sur
-                	        insertarArista(origen, destino);
-                	    } else if (col % 2 != 0 && destino.getFila() == fila - 6) { // impar: Sur → Norte
-                	        insertarArista(origen, destino);
-                	    }
-                	}
-
+            // Avenidas (horizontales)
+            if (fila % 2 != 0) { // Oeste → Este
+                for (int i = col + 1; i < size; i++) {
+                    int destinoID = matrizIDs[fila][i];
+                    if (destinoID != -1 && esConexionValida(fila, col, fila, i)) {
+                        insertarArista(origen, buscarNodoPorId(lista, destinoID));
+                        break;
+                    }
                 }
-                candidato = candidato.getSiguiente();
+            } else { // Este → Oeste
+                for (int i = col - 1; i >= 0; i--) {
+                    int destinoID = matrizIDs[fila][i];
+                    if (destinoID != -1 && esConexionValida(fila, col, fila, i)) {
+                        insertarArista(origen, buscarNodoPorId(lista, destinoID));
+                        break;
+                    }
+                }
+            }
+
+            // Calles (verticales)
+            if (col % 2 == 0) { // Norte → Sur
+                for (int i = fila + 1; i < size; i++) {
+                    int destinoID = matrizIDs[i][col];
+                    if (destinoID != -1 && esConexionValida(fila, col, i, col)) {
+                        insertarArista(origen, buscarNodoPorId(lista, destinoID));
+                        break;
+                    }
+                }
+            } else { // Sur → Norte
+                for (int i = fila - 1; i >= 0; i--) {
+                    int destinoID = matrizIDs[i][col];
+                    if (destinoID != -1 && esConexionValida(fila, col, i, col)) {
+                        insertarArista(origen, buscarNodoPorId(lista, destinoID));
+                        break;
+                    }
+                }
             }
 
             actual = actual.getSiguiente();
         }
 
+        // Verificación visual de conexiones
         System.out.println("🔍 Verificando conexiones:");
         NodoSimple<NodoInterseccion> verificador = lista.getPrimero();
         while (verificador != null) {
@@ -101,6 +113,26 @@ public class LogicaGrafo {
         }
     }
 
+    private boolean esConexionValida(int filaOrigen, int colOrigen, int filaDestino, int colDestino) {
+        if (filaOrigen == filaDestino) {
+            if (filaOrigen % 2 == 0) {
+                return colDestino < colOrigen; // Este → Oeste
+            } else {
+                return colDestino > colOrigen; // Oeste → Este
+            }
+        }
+
+        if (colOrigen == colDestino) {
+            if (colOrigen % 2 == 0) {
+                return filaDestino > filaOrigen; // Norte → Sur
+            } else {
+                return filaDestino < filaOrigen; // Sur → Norte
+            }
+        }
+
+        return false; // diagonales no válidas
+    }
+
     public int getIdNodo(int fila, int col) {
         return matrizIDs[fila][col];
     }
@@ -112,7 +144,7 @@ public class LogicaGrafo {
     }
 
     private int pesoAleatorio() {
-        return (int)(Math.random() * 8) + 3; // entre 3 y 10
+        return (int)(Math.random() * 8) + 3; // peso entre 3 y 10
     }
 
     private void insertarNodo(ListaSimple<NodoInterseccion> lista, NodoInterseccion nodo) {
@@ -124,5 +156,16 @@ public class LogicaGrafo {
             lista.getUltimo().setSiguiente(nuevo);
             lista.setUltimo(nuevo);
         }
+    }
+
+    private NodoInterseccion buscarNodoPorId(ListaSimple<NodoInterseccion> lista, int id) {
+        NodoSimple<NodoInterseccion> actual = lista.getPrimero();
+        while (actual != null) {
+            if (actual.getDato().getNombre() == id) {
+                return actual.getDato();
+            }
+            actual = actual.getSiguiente();
+        }
+        return null;
     }
 }
