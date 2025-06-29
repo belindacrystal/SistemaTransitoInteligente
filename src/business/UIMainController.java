@@ -192,11 +192,11 @@ public class UIMainController {
 			stage.setOnCloseRequest(
 					e->{
 						System.out.println("cerrando ventana");
-						controller.closeWindows(null);
+						controller.closeWindows();
 					}
 					);
-			Stage temp = (Stage)this.btnSolicitarTaxi.getScene().getWindow();	
-			//temp.close();
+		/*	Stage temp = (Stage)this.btnSolicitarTaxi.getScene().getWindow();	
+			temp.close();*/
 					
 		}catch(Exception e) {
 			

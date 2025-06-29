@@ -6,26 +6,32 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="434.0" prefWidth="455.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="business.UISolicitudController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="448.0" prefWidth="515.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="business.UISolicitudController">
    <children>
-      <Button fx:id="btnSolicitar" layoutX="168.0" layoutY="279.0" mnemonicParsing="false" onAction="#solicitar" prefHeight="36.0" prefWidth="119.0" text="Solicitar" />
+      <Button fx:id="btnSolicitar" layoutX="145.0" layoutY="344.0" mnemonicParsing="false" onAction="#solicitar" prefHeight="36.0" prefWidth="119.0" text="Solicitar" />
       <Label layoutX="129.0" layoutY="30.0" text="Solicitud Taxi">
          <font>
             <Font size="34.0" />
          </font>
       </Label>
-      <TextField fx:id="tfDestino" layoutX="213.0" layoutY="204.0" />
-      <Label layoutX="82.0" layoutY="136.0" text="Digite el origen:">
+      <TextField fx:id="tfDestino" layoutX="327.0" layoutY="173.0" />
+      <Label layoutX="30.0" layoutY="105.0" text="Digite el origen:">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Label layoutX="78.0" layoutY="204.0" text="Digite el destino:">
+      <Label layoutX="26.0" layoutY="173.0" text="Digite el destino:">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField fx:id="tfOrigen" layoutX="213.0" layoutY="136.0" />
+      <TextField fx:id="tfOrigen" layoutX="327.0" layoutY="105.0" />
       <Button fx:id="btnCerrar" layoutX="14.0" layoutY="394.0" mnemonicParsing="false" onAction="#cerrarVentana" text="Cerrar" />
+      <TextField fx:id="tfCantidadCarros" layoutX="327.0" layoutY="233.0" />
+      <Label layoutX="30.0" layoutY="233.0" text="Digite la cantidad de carros a visualizar:">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
