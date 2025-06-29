@@ -9,7 +9,6 @@ import domain.NodoSimple;
 
 public class LogicListaSimple<T> {
 
-    // 1. Agregar (insertar al final)
     public void agregar(T dato, ListaSimple<T> lista) {
         NodoSimple<T> nuevoNodo = new NodoSimple<>(dato);
 
@@ -22,29 +21,23 @@ public class LogicListaSimple<T> {
         }
     }
 
-    // 2. Buscar un elemento
     public boolean buscar(T dato, ListaSimple<T> lista) {
         NodoSimple<T> actual = lista.getPrimero();
-
         while (actual != null) {
             if (actual.getDato().equals(dato)) {
                 return true;
             }
             actual = actual.getSiguiente();
         }
-
         return false;
     }
 
-    // 3. Recorrer e imprimir la lista
     public void recorrer(ListaSimple<T> lista) {
         NodoSimple<T> actual = lista.getPrimero();
-
         if (actual == null) {
             System.out.println("La lista está vacía.");
             return;
         }
-
         System.out.print("Elementos en la lista: ");
         while (actual != null) {
             System.out.print(actual.getDato() + " -> ");
@@ -52,9 +45,7 @@ public class LogicListaSimple<T> {
         }
         System.out.println("null");
     }
-    
-    
-    // Agregar al inicio de la lista (usado por Dijkstra)
+
     public void agregarInicio(ListaSimple<NodoInterseccion> lista, NodoInterseccion dato) {
         NodoSimple<NodoInterseccion> nuevo = new NodoSimple<>(dato);
         nuevo.setSiguiente(lista.getPrimero());
@@ -63,94 +54,130 @@ public class LogicListaSimple<T> {
         }
         lista.setPrimero(nuevo);
     }
-    
+
     public NodoInterseccion buscarNodoPorId(ListaSimple<NodoInterseccion> lista, int id) {
         NodoSimple<NodoInterseccion> actual = lista.getPrimero();
-
         while (actual != null) {
             if (actual.getDato().getNombre() == id) {
                 return actual.getDato();
             }
             actual = actual.getSiguiente();
         }
-
         return null;
     }
 
-    // 4. Algoritmo de Dijkstra adaptado
     public ListaSimple<NodoInterseccion> calcularRuta(Grafo grafo, NodoInterseccion origen, NodoInterseccion destino, int tamanio) {
-        int totalNodos = tamanio * tamanio;
+        ListaSimple<NodoInterseccion> nodos = grafo.getListaNodos();
+        int totalNodos = contarNodos(nodos);
+
         int[] distancias = new int[totalNodos];
         boolean[] visitado = new boolean[totalNodos];
         NodoInterseccion[] anteriores = new NodoInterseccion[totalNodos];
+        NodoInterseccion[] indexados = new NodoInterseccion[totalNodos];
 
-        for (int i = 0; i < totalNodos; i++) {
-            distancias[i] = -1;
+        // Indexar nodos
+        NodoSimple<NodoInterseccion> actual = nodos.getPrimero();
+        int i = 0;
+        while (actual != null) {
+            indexados[i] = actual.getDato();
+            distancias[i] = Integer.MAX_VALUE;
             visitado[i] = false;
+            anteriores[i] = null;
+            i++;
+            actual = actual.getSiguiente();
         }
 
-        distancias[origen.getNombre()] = 0;
+        int idxOrigen = buscarIndiceNodo(indexados, origen);
+        int idxDestino = buscarIndiceNodo(indexados, destino);
+
+        if (idxOrigen == -1 || idxDestino == -1) return null;
+
+        distancias[idxOrigen] = 0;
 
         for (int count = 0; count < totalNodos - 1; count++) {
             int u = encontrarMinimo(distancias, visitado);
             if (u == -1) break;
 
             visitado[u] = true;
-            NodoInterseccion nodoU = buscarNodoPorId(grafo.getListaNodos(), u);
-            if (nodoU == null) continue;
+            NodoInterseccion nodoU = indexados[u];
+            NodoA calle = nodoU.getListaA().getPrimero();
 
-            NodoA actualCalle = nodoU.getListaA().getPrimero();
-            while (actualCalle != null) {
-                Calle calle = actualCalle.getCalle();
-                int v = calle.getNodoDestino().getNombre();
-
-                if (!visitado[v] && !calle.isBloqueada()) {
-                    int nuevaDistancia = distancias[u] + calle.getPeso();
-
-                    if (distancias[v] == -1 || nuevaDistancia < distancias[v]) {
+            while (calle != null) {
+                Calle c = calle.getCalle();
+                NodoInterseccion vecino = c.getNodoDestino();
+                int v = buscarIndiceNodo(indexados, vecino);
+                if (!visitado[v] && !c.isBloqueada()) {
+                    int nuevaDistancia = distancias[u] + c.getPeso();
+                    if (nuevaDistancia < distancias[v]) {
                         distancias[v] = nuevaDistancia;
                         anteriores[v] = nodoU;
                     }
                 }
-
-                actualCalle = actualCalle.getSiguiente();
+                calle = calle.getSiguiente();
             }
         }
 
-        return reconstruirRuta(anteriores, origen, destino);
+        return reconstruirRuta(anteriores, idxOrigen, idxDestino, indexados);
     }
 
-    // Método para reconstruir la ruta desde destino hasta origen
-    private ListaSimple<NodoInterseccion> reconstruirRuta(NodoInterseccion[] anteriores, NodoInterseccion origen, NodoInterseccion destino) {
-        ListaSimple<NodoInterseccion> ruta = new ListaSimple<>();
-        NodoInterseccion actual = destino;
 
-        while (actual != null && !actual.equals(origen)) {
+
+    private int buscarIndiceNodo(NodoInterseccion[] nodos, NodoInterseccion buscado) {
+        for (int i = 0; i < nodos.length; i++) {
+            if (nodos[i].getNombre() == buscado.getNombre()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private ListaSimple<NodoInterseccion> reconstruirRuta(NodoInterseccion[] anteriores, int idxOrigen, int idxDestino, NodoInterseccion[] indexados) {
+        ListaSimple<NodoInterseccion> ruta = new ListaSimple<>();
+        NodoInterseccion actual = indexados[idxDestino];
+
+        while (actual != null && actual.getNombre() != indexados[idxOrigen].getNombre()) {
             agregarInicio(ruta, actual);
-            actual = anteriores[actual.getNombre()];
+            int i = buscarIndiceNodo(indexados, actual);
+            actual = anteriores[i];
         }
 
         if (actual == null) return null;
 
-        agregarInicio(ruta, origen);
+        agregarInicio(ruta, indexados[idxOrigen]);
+
+        System.out.print("🛣 Ruta reconstruida: ");
+        NodoSimple<NodoInterseccion> paso = ruta.getPrimero();
+        paso = ruta.getPrimero();
+        while (paso != null) {
+            System.out.print(paso.getDato().getNombre());
+            paso = paso.getSiguiente();
+            if (paso != null) {
+                System.out.print(" → ");
+            }
+        }
+        System.out.println(" → DESTINO ✅");
         return ruta;
     }
 
-  
+    private int contarNodos(ListaSimple<NodoInterseccion> lista) {
+        int count = 0;
+        NodoSimple<NodoInterseccion> actual = lista.getPrimero();
+        while (actual != null) {
+            count++;
+            actual = actual.getSiguiente();
+        }
+        return count;
+    }
 
     private int encontrarMinimo(int[] distancias, boolean[] visitado) {
         int indiceMin = -1;
-
         for (int i = 0; i < distancias.length; i++) {
-            if (!visitado[i] && distancias[i] != -1) {
+            if (!visitado[i] && distancias[i] != Integer.MAX_VALUE) {
                 if (indiceMin == -1 || distancias[i] < distancias[indiceMin]) {
                     indiceMin = i;
                 }
             }
         }
-
         return indiceMin;
     }
-
-  
 }

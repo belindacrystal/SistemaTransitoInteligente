@@ -40,9 +40,6 @@ public class UISolicitudController {
 		        int origenId = Integer.parseInt(tfOrigen.getText());
 		        int destinoId = Integer.parseInt(tfDestino.getText());
 
-		        // Por si acaso el grafo no está generado aún
-		        AdministradorInstancias.getLogicaGrafo().generarCiudad(AppContext.cuadrantesSeleccionados * 6 + 1);
-
 		        Grafo grafo = AdministradorInstancias.getGrafo();
 		        LogicListaSimple<NodoInterseccion> logic = new LogicListaSimple<>();
 
@@ -80,7 +77,7 @@ public class UISolicitudController {
 		        if (ruta == null) {
 		            System.out.println("❌ No se encontró ruta.");
 		        } else {
-		            System.out.print("🛣️ Ruta calculada: ");
+		            System.out.print("🛣 Ruta calculada: ");
 		            NodoSimple<NodoInterseccion> paso = ruta.getPrimero();
 		            while (paso != null) {
 		                System.out.print(paso.getDato().getNombre() + " → ");
@@ -90,7 +87,7 @@ public class UISolicitudController {
 		        }
 
 		    } catch (NumberFormatException e) {
-		        System.out.println("⚠️ Entrada inválida en los campos.");
+		        System.out.println("⚠ Entrada inválida en los campos.");
 		    }
 		}
 	@FXML

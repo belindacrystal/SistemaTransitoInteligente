@@ -28,6 +28,9 @@ public class LogicaVehiculos {
     	    }
 
 	}
+    
+    
+
     public void iniciarSimulacion() {
 	}
     public void detenerTodos() {
