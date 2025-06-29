@@ -10,12 +10,12 @@ import domain.NodoSimple;
 public class LogicaGrafo {
 
     private Grafo grafo;
+    private int[][] matrizIDs;
 
     public LogicaGrafo() {
         this.grafo = AdministradorInstancias.getGrafo(); 
     }
 
-    
     private void insertarCalleEnListaA(NodoInterseccion nodo, Calle calle) {
         NodoA nuevo = new NodoA(calle);
 
@@ -29,90 +29,82 @@ public class LogicaGrafo {
     }
 
     public void generarCiudad(int size) {
-        grafo.limpiar(); // Reinicia el grafo
+        grafo.limpiar();
 
         ListaSimple<NodoInterseccion> lista = new ListaSimple<>();
-        int id = 1;
+        matrizIDs = new int[size][size];
 
-        // Crear nodos en intersecciones reales
+        int idVisual = 1;
+
         for (int fila = 0; fila < size; fila++) {
             for (int col = 0; col < size; col++) {
                 if (fila % 6 == 0 || col % 6 == 0) {
-                    NodoInterseccion nodo = new NodoInterseccion(id, fila, col);
+                    NodoInterseccion nodo = new NodoInterseccion(idVisual, fila, col);
+                    matrizIDs[fila][col] = idVisual;
                     insertarNodo(lista, nodo);
-                    id++;
+                    idVisual++;
+                } else {
+                    matrizIDs[fila][col] = -1; // no hay nodo en esta posición
                 }
             }
         }
 
-        // Guardar en el grafo
         grafo.setListaNodos(lista);
 
-     // Conectar nodos con sentido del tránsito
-        NodoSimple<NodoInterseccion> origen = lista.getPrimero();
-        while (origen != null) {
-            NodoInterseccion nodoOrigen = origen.getDato();
-            int fila = nodoOrigen.getFila();
-            int col = nodoOrigen.getColumna();
-            int idOrigen = nodoOrigen.getNombre();
-
-            NodoSimple<NodoInterseccion> destino = lista.getPrimero();
-            while (destino != null) {
-                NodoInterseccion nodoDestino = destino.getDato();
-                int filaDest = nodoDestino.getFila();
-                int colDest = nodoDestino.getColumna();
-                int idDestino = nodoDestino.getNombre();
-
-                // Horizontal: Avenidas
-                if (fila == filaDest) {
-                    if (fila % 2 == 0 && colDest == col - 6) {
-                        // Fila par → de Este a Oeste (→ conectar a la izquierda)
-                    	insertarArista(nodoOrigen, nodoDestino);
-
-                    } else if (fila % 2 != 0 && colDest == col + 6) {
-                        // Fila impar → de Oeste a Este (← conectar a la derecha)
-                    	insertarArista(nodoOrigen, nodoDestino);
-
-                    }
-                }
-
-                // Vertical: Calles
-                if (col == colDest) {
-                    if (col % 2 == 0 && filaDest == fila + 6) {
-                        // Col par → de Norte a Sur (↑ conectar hacia abajo)
-                    	insertarArista(nodoOrigen, nodoDestino);
-
-                    } else if (col % 2 != 0 && filaDest == fila - 6) {
-                        // Col impar → de Sur a Norte (↓ conectar hacia arriba)
-                    	insertarArista(nodoOrigen, nodoDestino);
-
-                    }
-                }
-
-                destino = destino.getSiguiente();
-            }
-
-            origen = origen.getSiguiente();
-        }
-        
-        System.out.println("Ciudad generada con los siguientes nodos:");
-
-        NodoSimple<NodoInterseccion> actual = grafo.getListaNodos().getPrimero();
+        NodoSimple<NodoInterseccion> actual = lista.getPrimero();
         while (actual != null) {
-            NodoInterseccion nodo = actual.getDato();
-            System.out.println("Nodo ID: " + nodo.getNombre() + " [Fila: " + nodo.getFila() + ", Columna: " + nodo.getColumna() + "]");
+            NodoInterseccion origen = actual.getDato();
+            int fila = origen.getFila();
+            int col = origen.getColumna();
 
-            NodoA calle = nodo.getListaA().getPrimero();
-            while (calle != null) {
-                Calle c = calle.getCalle();
-                System.out.println("   → Conectado a nodo " + c.getNodoDestino().getNombre() + " con peso: " + c.getPeso());
-                calle = calle.getSiguiente();
+            NodoSimple<NodoInterseccion> candidato = lista.getPrimero();
+            while (candidato != null) {
+                NodoInterseccion destino = candidato.getDato();
+                if (origen.getNombre() != destino.getNombre()) {
+
+                	// Avenidas: misma fila
+                	if (fila == destino.getFila()) {
+                	    if (fila % 2 != 0 && destino.getColumna() == col + 6) { // impar: Oeste → Este
+                	        insertarArista(origen, destino);
+                	    } else if (fila % 2 == 0 && destino.getColumna() == col - 6) { // par: Este → Oeste
+                	        insertarArista(origen, destino);
+                	    }
+                	}
+
+                	// Calles: misma columna
+                	if (col == destino.getColumna()) {
+                	    if (col % 2 == 0 && destino.getFila() == fila + 6) { // par: Norte → Sur
+                	        insertarArista(origen, destino);
+                	    } else if (col % 2 != 0 && destino.getFila() == fila - 6) { // impar: Sur → Norte
+                	        insertarArista(origen, destino);
+                	    }
+                	}
+
+                }
+                candidato = candidato.getSiguiente();
             }
 
             actual = actual.getSiguiente();
         }
 
+        System.out.println("🔍 Verificando conexiones:");
+        NodoSimple<NodoInterseccion> verificador = lista.getPrimero();
+        while (verificador != null) {
+            NodoInterseccion nodo = verificador.getDato();
+            System.out.println("Nodo ID: " + nodo.getNombre());
+            NodoA calle = nodo.getListaA().getPrimero();
+            while (calle != null) {
+                System.out.println("  → Conectado a: " + calle.getCalle().getNodoDestino().getNombre());
+                calle = calle.getSiguiente();
+            }
+            verificador = verificador.getSiguiente();
+        }
     }
+
+    public int getIdNodo(int fila, int col) {
+        return matrizIDs[fila][col];
+    }
+
     private void insertarArista(NodoInterseccion origen, NodoInterseccion destino) {
         int peso = pesoAleatorio();
         Calle calle = new Calle(origen, destino, peso);
@@ -123,7 +115,6 @@ public class LogicaGrafo {
         return (int)(Math.random() * 8) + 3; // entre 3 y 10
     }
 
-
     private void insertarNodo(ListaSimple<NodoInterseccion> lista, NodoInterseccion nodo) {
         NodoSimple<NodoInterseccion> nuevo = new NodoSimple<>(nodo);
         if (lista.getPrimero() == null) {
@@ -132,61 +123,6 @@ public class LogicaGrafo {
         } else {
             lista.getUltimo().setSiguiente(nuevo);
             lista.setUltimo(nuevo);
-        }
-    }
-    private void conectarNodos(ListaSimple<NodoInterseccion> lista) {
-        NodoSimple<NodoInterseccion> actual = lista.getPrimero();
-
-        while (actual != null) {
-            NodoSimple<NodoInterseccion> siguiente = lista.getPrimero();
-
-            while (siguiente != null) {
-                if (sonAdyacentes(actual.getDato(), siguiente.getDato())) {
-                	int peso = (int) (Math.random() * 8) + 3; // número entre 3 y 10
-                	Calle calle = new Calle(actual.getDato(), siguiente.getDato(), peso);
-                    insertarCalleEnListaA(actual.getDato(), calle);
-                }
-                siguiente = siguiente.getSiguiente();
-            }
-
-            actual = actual.getSiguiente();
-        }
-    }
-
-
-    private boolean sonAdyacentes(NodoInterseccion a, NodoInterseccion b) {
-        return esVecinoVertical(a, b) || esVecinoHorizontal(a, b);
-    }
-
-    private boolean esVecinoVertical(NodoInterseccion origen, NodoInterseccion destino) {
-    	 // Misma columna
-        if (origen.getColumna() != destino.getColumna()) return false;
-
-        int diff = destino.getFila() - origen.getFila();
-
-        // Columna impar: permite de SUR a NORTE (hacia arriba)
-        if (origen.getColumna() % 2 != 0) {
-            return diff == -6;
-        }
-        // Columna par: permite de NORTE a SUR (hacia abajo)
-        else {
-            return diff == 6;
-        }
-    }
-
-    private boolean esVecinoHorizontal(NodoInterseccion origen, NodoInterseccion destino) {
-    	  // Misma fila
-        if (origen.getFila() != destino.getFila()) return false;
-
-        int diff = destino.getColumna() - origen.getColumna();
-
-        // Fila impar: permite de OESTE a ESTE (derecha)
-        if (origen.getFila() % 2 != 0) {
-            return diff == 6;
-        }
-        // Fila par: permite de ESTE a OESTE (izquierda)
-        else {
-            return diff == -6;
         }
     }
 }

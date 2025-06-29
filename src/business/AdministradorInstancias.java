@@ -31,5 +31,6 @@ public class AdministradorInstancias {
     }
     public class AppContext {
         public static int cuadrantesSeleccionados = 5; // valor por defecto
+        public static UIMainController mainController = null; // <-- Agregar esta línea
     }
 }

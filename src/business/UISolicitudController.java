@@ -2,6 +2,7 @@ package business;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -29,6 +30,8 @@ public class UISolicitudController {
 	private TextField tfDestino;
 	@FXML
 	private TextField tfOrigen;
+	@FXML
+	private TextField tfCantidadCarros; 
 
 	// Event Listener on Button[#btnSolicitar].onAction
 	@FXML
@@ -36,9 +39,6 @@ public class UISolicitudController {
 		  try {
 		        int origenId = Integer.parseInt(tfOrigen.getText());
 		        int destinoId = Integer.parseInt(tfDestino.getText());
-
-		        // Por si acaso el grafo no está generado aún
-		        AdministradorInstancias.getLogicaGrafo().generarCiudad(AppContext.cuadrantesSeleccionados * 6 + 1);
 
 		        Grafo grafo = AdministradorInstancias.getGrafo();
 		        LogicListaSimple<NodoInterseccion> logic = new LogicListaSimple<>();
@@ -77,7 +77,7 @@ public class UISolicitudController {
 		        if (ruta == null) {
 		            System.out.println("❌ No se encontró ruta.");
 		        } else {
-		            System.out.print("🛣️ Ruta calculada: ");
+		            System.out.print("🛣 Ruta calculada: ");
 		            NodoSimple<NodoInterseccion> paso = ruta.getPrimero();
 		            while (paso != null) {
 		                System.out.print(paso.getDato().getNombre() + " → ");
@@ -87,16 +87,18 @@ public class UISolicitudController {
 		        }
 
 		    } catch (NumberFormatException e) {
-		        System.out.println("⚠️ Entrada inválida en los campos.");
+		        System.out.println("⚠ Entrada inválida en los campos.");
 		    }
 		}
 	@FXML
 	public void cerrarVentana(ActionEvent event) {
-		closeWindows(null);
+		closeWindows();
 	}
 
-	public void closeWindows(Object object) {
-		try {
+	public void closeWindows() {
+		 Stage stage = (Stage) btnCerrar.getScene().getWindow();
+		    stage.close();
+		/*try {
 			FXMLLoader loader = new FXMLLoader(
 				getClass().getResource("/presentation/UIMain.fxml"));
 		    Parent root = loader.load();
@@ -118,7 +120,7 @@ public class UISolicitudController {
 		
 		}catch(Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 }
